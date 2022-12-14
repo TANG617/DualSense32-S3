@@ -1,7 +1,8 @@
 // #ifndef USEPLATFORMIO
 // #error "This example can only be run on platformIO"
 // #endif
-
+#include "ui.h"
+#include<ps5Controller.h>
 #define TOUCH_MODULES_CST_MUTUAL
 #include "TouchLib.h"
 // #define TOUCH_READ_FROM_INTERRNUPT
@@ -43,6 +44,21 @@ static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, 
   }
   return false;
 }
+
+
+void lv_checkbox_set_state(lv_obj_t * checkbox, bool checked)
+{
+    if(checked)
+    {
+      lv_obj_add_state(checkbox, LV_STATE_CHECKED);
+    }
+    else
+    {
+      lv_obj_clear_state(checkbox, LV_STATE_CHECKED);
+    }
+    
+}
+
 
 static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map) {
   esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t)drv->user_data;
@@ -184,21 +200,70 @@ void setup() {
 // // #else UseMyGUI
 // //   myGUI();
 // #endif
-lv_obj_t *label = lv_label_create( lv_scr_act() );
-    lv_label_set_text( label, LVGL_Arduino.c_str() );
-    lv_obj_align( label, LV_ALIGN_CENTER, 0, 0 );
+// lv_obj_t *label = lv_label_create( lv_scr_act() );
+//     lv_label_set_text( label, LVGL_Arduino.c_str() );
+//     lv_obj_align( label, LV_ALIGN_CENTER, 0, 0 );
+ps5.begin("bc:c7:46:33:11:d2");
+ui_init();
+
 }
 
-int myGUI()
-{
-  lv_obj_t *obj = lv_obj_create(lv_scr_act());
-  lv_obj_set_align(obj, LV_ALIGN_CENTER);
-  delay(1000);
-}
+// int myGUI()
+// {
+//   lv_obj_t *obj = lv_obj_create(lv_scr_act());
+//   lv_obj_set_align(obj, LV_ALIGN_CENTER);
+//   delay(1000);
+// }
 
 void loop() {
   lv_timer_handler();
   // myGUI();
+  lv_timer_handler(); /* let the GUI do its work 让 GUI 完成它的工作 */
+    while (ps5.isConnected()) {
+        // lv_scr_load(ui_Screen1);
+        lv_timer_handler();
+        
+
+        lv_bar_set_value(ui_LStickX, ps5.LStickX(), LV_ANIM_ON);
+        lv_bar_set_value(ui_LStickY, ps5.LStickY(), LV_ANIM_ON);
+        lv_bar_set_value(ui_RStickX, ps5.RStickX(), LV_ANIM_ON);
+        lv_bar_set_value(ui_RStickY, ps5.RStickY(), LV_ANIM_ON);
+
+        lv_bar_set_value(ui_L2, ps5.L2Value(), LV_ANIM_ON);
+        lv_bar_set_value(ui_R2, ps5.R2Value(), LV_ANIM_ON);
+
+        lv_checkbox_set_state(ui_L1, ps5.L1());
+        lv_checkbox_set_state(ui_R1, ps5.R1());
+
+        lv_checkbox_set_state(ui_CROSS, ps5.Cross());
+        // lv_checkbox_set_state(ui_CROSS, ps5.Cross());
+        lv_checkbox_set_state(ui_CIRCLE, ps5.Circle());
+        lv_checkbox_set_state(ui_SQUARE, ps5.Square());
+        lv_checkbox_set_state(ui_TRIANGLE, ps5.Triangle());
+
+        lv_checkbox_set_state(ui_UP, ps5.Up());
+        lv_checkbox_set_state(ui_DOWN, ps5.Down());
+        lv_checkbox_set_state(ui_LEFT, ps5.Left());
+        lv_checkbox_set_state(ui_RIGHT, ps5.Right());
+
+         
+
+        // if (ps5.Charging()) Serial.println("The controller is charging"); //doesn't work
+        // if (ps5.Audio()) Serial.println("The controller has headphones attached"); //doesn't work
+        // if (ps5.Mic()) Serial.println("The controller has a mic attached"); //doesn't work
+
+        // Serial.printf("Battery Level : %d\n", ps5.Battery()); //doesn't work
+        // delay(10);
+        // tft.fillScreen(TFT_BLACK);
+        // Serial.println();
+        // ps5.setRumble(ps5.L2Value(), ps5.R2Value());
+        // tft.fillScreen(TFT_BLACK);
+    // This delay is to make the output more human readable
+    // Remove it when you're not trying to see the output
+    // delay(50);
+    
+    }
+    // delay( 15 );
   delay(2);
 }
 
