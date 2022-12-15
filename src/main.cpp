@@ -2,11 +2,11 @@
 // #error "This example can only be run on platformIO"
 // #endif
 #include "ui.h"
-#include<ps5Controller.h>
+#include "ps5Controller.h"
 #define TOUCH_MODULES_CST_MUTUAL
-#include "TouchLib.h"
+// #include "TouchLib.h"
 // #define TOUCH_READ_FROM_INTERRNUPT
-String LVGL_Arduino = "Hello Arduino! ";
+// String LVGL_Arduino = "Hello Arduino! ";
 
 /* 
 This example can only be run on platformIO. 
@@ -30,7 +30,7 @@ static lv_disp_drv_t disp_drv;      // contains callback functions
 static lv_color_t *lv_disp_buf;
 static bool is_initialized_lvgl = false;
 
-TouchLib touch(Wire, PIN_IIC_SDA, PIN_IIC_SCL, CTS328_SLAVE_ADDRESS, PIN_TOUCH_RES);
+// TouchLib touch(Wire, PIN_IIC_SDA, PIN_IIC_SCL, CTS328_SLAVE_ADDRESS, PIN_TOUCH_RES);
 
 bool inited_touch = false;
 #if defined(TOUCH_READ_FROM_INTERRNUPT)
@@ -70,21 +70,21 @@ static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_
   esp_lcd_panel_draw_bitmap(panel_handle, offsetx1, offsety1, offsetx2 + 1, offsety2 + 1, color_map);
 }
 
-static void lv_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
-#if defined(TOUCH_READ_FROM_INTERRNUPT)
-  if (get_int_signal) {
-    get_int_signal = false;
-    touch.read();
-#else
-  if (touch.read()) {
-#endif
-    TP_Point t = touch.getPoint(0);
-    data->point.x = t.x;
-    data->point.y = t.y;
-    data->state = LV_INDEV_STATE_PR;
-  } else
-    data->state = LV_INDEV_STATE_REL;
-}
+// static void lv_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
+// #if defined(TOUCH_READ_FROM_INTERRNUPT)
+//   if (get_int_signal) {
+//     get_int_signal = false;
+//     touch.read();
+// #else
+//   if (touch.read()) {
+// #endif
+//     TP_Point t = touch.getPoint(0);
+//     data->point.x = t.x;
+//     data->point.y = t.y;
+//     data->state = LV_INDEV_STATE_PR;
+//   } else
+//     data->state = LV_INDEV_STATE_REL;
+// }
 
 void setup() {
   pinMode(PIN_POWER_ON, OUTPUT);
@@ -171,21 +171,21 @@ void setup() {
   lv_disp_drv_register(&disp_drv);
 
   /* Register touch brush with LVGL */
-  Wire.begin(PIN_IIC_SDA, PIN_IIC_SCL, 800000);
-  inited_touch = touch.init();
-  if (inited_touch) {
-    touch.setRotation(1);
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = lv_touchpad_read;
-    lv_indev_drv_register(&indev_drv);
-  }
-  is_initialized_lvgl = true;
-#if defined(TOUCH_READ_FROM_INTERRNUPT)
-  attachInterrupt(
-      PIN_TOUCH_INT, [] { get_int_signal = true; }, FALLING);
-#endif
+//   Wire.begin(PIN_IIC_SDA, PIN_IIC_SCL, 800000);
+//   inited_touch = touch.init();
+//   if (inited_touch) {
+//     touch.setRotation(1);
+//     static lv_indev_drv_t indev_drv;
+//     lv_indev_drv_init(&indev_drv);
+//     indev_drv.type = LV_INDEV_TYPE_POINTER;
+//     indev_drv.read_cb = lv_touchpad_read;
+//     lv_indev_drv_register(&indev_drv);
+//   }
+//   is_initialized_lvgl = true;
+// #if defined(TOUCH_READ_FROM_INTERRNUPT)
+//   attachInterrupt(
+//       PIN_TOUCH_INT, [] { get_int_signal = true; }, FALLING);
+// #endif
 
 // #if LV_USE_DEMO_WIDGETS
 //   lv_demo_widgets();
@@ -219,51 +219,52 @@ void loop() {
   lv_timer_handler();
   // myGUI();
   lv_timer_handler(); /* let the GUI do its work 让 GUI 完成它的工作 */
-    while (ps5.isConnected()) {
-        // lv_scr_load(ui_Screen1);
-        lv_timer_handler();
+    // while (ps5.isConnected()) {
+    
+    //     // lv_scr_load(ui_Screen1);
+    //     lv_timer_handler();
         
 
-        lv_bar_set_value(ui_LStickX, ps5.LStickX(), LV_ANIM_ON);
-        lv_bar_set_value(ui_LStickY, ps5.LStickY(), LV_ANIM_ON);
-        lv_bar_set_value(ui_RStickX, ps5.RStickX(), LV_ANIM_ON);
-        lv_bar_set_value(ui_RStickY, ps5.RStickY(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_LStickX, ps5.LStickX(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_LStickY, ps5.LStickY(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_RStickX, ps5.RStickX(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_RStickY, ps5.RStickY(), LV_ANIM_ON);
 
-        lv_bar_set_value(ui_L2, ps5.L2Value(), LV_ANIM_ON);
-        lv_bar_set_value(ui_R2, ps5.R2Value(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_L2, ps5.L2Value(), LV_ANIM_ON);
+    //     lv_bar_set_value(ui_R2, ps5.R2Value(), LV_ANIM_ON);
 
-        lv_checkbox_set_state(ui_L1, ps5.L1());
-        lv_checkbox_set_state(ui_R1, ps5.R1());
+    //     lv_checkbox_set_state(ui_L1, ps5.L1());
+    //     lv_checkbox_set_state(ui_R1, ps5.R1());
 
-        lv_checkbox_set_state(ui_CROSS, ps5.Cross());
-        // lv_checkbox_set_state(ui_CROSS, ps5.Cross());
-        lv_checkbox_set_state(ui_CIRCLE, ps5.Circle());
-        lv_checkbox_set_state(ui_SQUARE, ps5.Square());
-        lv_checkbox_set_state(ui_TRIANGLE, ps5.Triangle());
+    //     lv_checkbox_set_state(ui_CROSS, ps5.Cross());
+    //     // lv_checkbox_set_state(ui_CROSS, ps5.Cross());
+    //     lv_checkbox_set_state(ui_CIRCLE, ps5.Circle());
+    //     lv_checkbox_set_state(ui_SQUARE, ps5.Square());
+    //     lv_checkbox_set_state(ui_TRIANGLE, ps5.Triangle());
 
-        lv_checkbox_set_state(ui_UP, ps5.Up());
-        lv_checkbox_set_state(ui_DOWN, ps5.Down());
-        lv_checkbox_set_state(ui_LEFT, ps5.Left());
-        lv_checkbox_set_state(ui_RIGHT, ps5.Right());
+    //     lv_checkbox_set_state(ui_UP, ps5.Up());
+    //     lv_checkbox_set_state(ui_DOWN, ps5.Down());
+    //     lv_checkbox_set_state(ui_LEFT, ps5.Left());
+    //     lv_checkbox_set_state(ui_RIGHT, ps5.Right());
 
          
 
-        // if (ps5.Charging()) Serial.println("The controller is charging"); //doesn't work
-        // if (ps5.Audio()) Serial.println("The controller has headphones attached"); //doesn't work
-        // if (ps5.Mic()) Serial.println("The controller has a mic attached"); //doesn't work
+    //     // if (ps5.Charging()) Serial.println("The controller is charging"); //doesn't work
+    //     // if (ps5.Audio()) Serial.println("The controller has headphones attached"); //doesn't work
+    //     // if (ps5.Mic()) Serial.println("The controller has a mic attached"); //doesn't work
 
-        // Serial.printf("Battery Level : %d\n", ps5.Battery()); //doesn't work
-        // delay(10);
-        // tft.fillScreen(TFT_BLACK);
-        // Serial.println();
-        // ps5.setRumble(ps5.L2Value(), ps5.R2Value());
-        // tft.fillScreen(TFT_BLACK);
-    // This delay is to make the output more human readable
-    // Remove it when you're not trying to see the output
-    // delay(50);
+    //     // Serial.printf("Battery Level : %d\n", ps5.Battery()); //doesn't work
+    //     // delay(10);
+    //     // tft.fillScreen(TFT_BLACK);
+    //     // Serial.println();
+    //     // ps5.setRumble(ps5.L2Value(), ps5.R2Value());
+    //     // tft.fillScreen(TFT_BLACK);
+    // // This delay is to make the output more human readable
+    // // Remove it when you're not trying to see the output
+    // // delay(50);
     
-    }
-    // delay( 15 );
+    // }
+    // // delay( 15 );
   delay(2);
 }
 
